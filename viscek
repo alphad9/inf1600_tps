@@ -1,0 +1,195 @@
+/*
+Implementation en C:
+void vicsekImage(uint32_t x, uint32_t y, uint32_t size,
+                 Image& img, Pixel color) {
+    if (x >= img.width || y >= img.height) return;
+
+    if (size == 1) {
+        img.pixels[y][x] = color;
+        return;
+    }
+
+    uint32_t third = size / 3;
+    if (third == 0) {
+        img.pixels[y][x] = color;
+        return;
+    }
+
+    // Top-left
+    vicsekImage(x, y, third, img, color);
+
+    // Top-right
+    vicsekImage(x + 2 * third, y, third, img, color);
+
+    // Center
+    vicsekImage(x + third, y + third, third, img, color);
+
+    // Bottom-left
+    vicsekImage(x, y + 2 * third, third, img, color);
+
+    // Bottom-right
+    vicsekImage(x + 2 * third, y + 2 * third, third, img, color);
+}
+
+L’algorithme fonctionne mieux avec des tailles puissances de 3
+L’appel de la fonction dans le main sera ainsi : vicsekImage(0, 0, 1024, img, color);
+*/
+
+    .data 
+
+    .text 
+    .globl vicsekImage                      
+
+vicsekImage:
+
+    
+
+
+
+
+    # prologue
+    pushl   %ebp                      
+    movl    %esp, %ebp 
+
+    pushl %ebx
+    pushl %esi
+    pushl %edi
+
+    //image
+    mov 20(%ebp), %eax 
+    // pixels dans ecx
+    mov 8 (%eax) , % ecx 
+    
+    movl 8(%ebp) , %esi
+    movl 12(%ebp) , %edi
+    //condition de fonctionnement
+    cmpl (%eax), %esi 
+    //x plus grand que width
+    jae fin
+
+    cmpl 4(%eax), %edi
+    jae fin
+
+
+
+    //cas de base un
+    cmpl $1,16(%ebp)
+    je cas_base
+
+    mov $0 , %edx
+    mov 16(%ebp),%eax
+    movl $3 , %ecx
+    divl %ecx
+    mov %eax,%ebx 
+
+    cmpl $0, %ebx
+    je cas_base
+
+    jmp appels
+
+    cas_base: 
+    mov (%ecx,%edi,4) , %eax
+    mov 24 (%ebp),%ecx
+    mov %ecx, (%eax, %esi, 4)  
+    jmp fin
+    
+
+    
+    appels:
+
+    //premier appel
+    push 24(%ebp)
+    push 20 (%ebp)
+    push %ebx
+    push %edi
+    push %esi
+    call vicsekImage
+    addl $20, %esp
+    //deuxieme appel 
+
+
+    push 24(%ebp)
+    push 20 (%ebp)
+    push %ebx
+    push %edi
+    movl %ebx, %eax        
+    addl %ebx, %eax       
+    addl %esi, %eax       
+
+    pushl %eax 
+    //(x + 2 * third)
+
+    call vicsekImage
+    addl $20, %esp
+
+    //troisieme quatrieme et 5eme appels
+
+    //x + third, y + third
+    pushl 24(%ebp)              
+    pushl 20(%ebp)              
+    pushl %ebx                   
+
+    movl %edi, %eax
+    addl %ebx, %eax              
+    pushl %eax
+
+    movl %esi, %eax
+    addl %ebx, %eax              
+    pushl %eax
+
+    call vicsekImage
+    addl $20, %esp
+
+
+    //Appel 4 : x, y + 2*third
+
+    pushl 24(%ebp)              
+    pushl 20(%ebp)              
+    pushl %ebx    
+
+    movl %ebx, %eax
+    addl %ebx, %eax            
+    addl %edi, %eax              
+    pushl %eax
+
+    pushl %esi                   
+
+    call vicsekImage
+    addl $20, %esp
+
+
+    
+    //appel 5 : (x + 2*third, y + 2*third)
+    pushl 24(%ebp)              
+    pushl 20(%ebp)              
+    pushl %ebx                   
+
+    movl %ebx, %eax
+    addl %ebx , %eax              
+    addl %edi , %eax              
+    pushl %eax
+
+    movl %ebx, %eax
+    addl %ebx , %eax              
+    addl %esi, %eax              
+    pushl %eax
+
+    call vicsekImage
+    addl $20, %esp
+
+
+
+    # TODO
+
+    fin:
+    # epilogue
+    pop %edi
+    pop %esi
+    pop %ebx
+    
+    
+
+
+    leave 
+    ret   
+

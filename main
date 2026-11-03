@@ -1,0 +1,75 @@
+/*
+    Vous pouvez modifier le liens des images. SVP mettre leur source si pris en ligne.
+*/
+
+    .data 
+
+inputPixelate: 
+    .asciz "images/image.png" # <- PLACER VOTRE IMAGE A CET ENDROIT. REMPLACER LE NOM DU CHEMIN AU BESOIN.
+
+outputPixelate:
+    .asciz "pixelate.png"
+
+outputViscek:
+    .asciz "viscek.png"
+
+
+    .text 
+    .globl main                      
+
+main:
+    # prologue
+    pushl   %ebp                      
+    movl    %esp, %ebp                  
+
+    #################### Filtre Pixelate #######################
+
+    # TODO: Charger l'image inputPixelate en appelant loadImage()
+  
+
+    # TODO: Appliquer le filtre pixelateFilter() sur cette image
+  
+    
+    # TODO: Sauvegarder cette image dans le fichier outputPixelate avec saveImage()
+  
+    # TODO: Libérer la mémoire de vos images avec freeImage()
+  
+
+    #################### Fractale de Viscek #######################
+
+
+    # TODO: Créer une image vide de taille d'une puissance de 2 en appelant createImage()
+    subl $12,%esp
+    push $729
+    push $729
+    leal -12(%ebp), %eax
+    push %eax
+    call createImage
+    addl $12, %esp
+    
+    # TODO: Dessiner la fractale de Viscek avec la fonction récursive vicsekImage()
+    push $0xFF105CE4
+    leal -12(%ebp), %eax
+    push %eax
+    push $729
+    push $0
+    push $0
+    call vicsekImage
+    addl $20, %esp
+    # TODO: Sauvegarder cette image dans le fichier outputViscek avec saveImage()
+    leal -12(%ebp), %eax
+    push %eax
+    pushl $outputViscek 
+    call saveImage
+    addl $8, %esp
+
+    # TODO: Libérer la mémoire de vos images avec freeImage()
+    leal -12(%ebp), %eax
+    push %eax
+    call freeImage
+    addl $4, %esp
+
+    movl    $0, %eax
+    # epilogue
+    leave 
+    ret   
